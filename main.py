@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from .database import engine, Base
+from .database.engine import lifespan
+from .database.models.base import Base
 # from .routes import auth_routes, user_routes, product_routes
 # from .middlewares.logging_middleware import LoggingMiddleware
-from config import settings
+from .config import settings
 
-app = FastAPI(title=settings.app_name)
+app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 # Middlewares
 app.add_middleware(
