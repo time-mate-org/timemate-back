@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    app_name: str = "Team Mate"
+    app_name: str = "Time Mate"
     admin_email: str = 'timemate@ennes.dev'
     db_connectin: str = ''
     # exportar no ambiente e usar variável de ambiente

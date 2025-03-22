@@ -7,9 +7,8 @@ from .models.base import Base
 from .models import *
 
 mysql_url = os.getenv("MYSQL_URI").replace("mysql://", "mysql+pymysql://")
-mysql_url += "?ssl_ca=./database/ca.pem"
+# mysql_url += "?ssl_ca=./database/ca.pem"
 engine = create_engine(mysql_url, echo=True)
-
 
 def create_db_and_tables():
     try:            
