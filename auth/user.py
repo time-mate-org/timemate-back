@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi.security import OAuth2PasswordBearer
-import jwt
+from auth import jwt
 import os
 from fastapi import Depends, HTTPException, status
 from jwt.exceptions import InvalidTokenError
@@ -28,7 +28,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     except InvalidTokenError:
         raise credentials_exception
     # usuarios aqui
-    user = get_user(fake_users_db, username=token_data.username)
+    user = jwt.get_user(fake_users_db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -43,9 +43,9 @@ async def get_current_active_user(
 
 
 def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
+    user = jwt.get_user(fake_db, username)
     if not user:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not jwt.verify_password(password, user.hashed_password):
         return False
     return user
