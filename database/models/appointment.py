@@ -18,6 +18,3 @@ class Appointment(Base, table=True):
     client: "Client" = Relationship(back_populates="appointments")
     professional: "Professional" = Relationship(back_populates='appointments')
     service: "Service" = Relationship(back_populates='appointments')
-
-
-print("classe appointment criada")
