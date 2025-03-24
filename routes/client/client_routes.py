@@ -40,7 +40,7 @@ async def create_client(client: client_validation.ClientCreateValidation, sessio
     if existing_client:
         raise HTTPException(
             status_code=400,
-            detail="A client with the same name, phone, and address already exists."
+            detail="A client with the same name, phone and address already exists."
         )
 
     db_client = Client(

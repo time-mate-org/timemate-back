@@ -43,7 +43,7 @@ async def create_service(
     if existing_service:
         raise HTTPException(
             status_code=400,
-            detail="A service with the same name, estimated time, and price already exists."
+            detail="A service with the same name, estimated time and price already exists."
         )
         
     db_service = Service(
