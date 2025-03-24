@@ -29,6 +29,20 @@ async def read_client(client_id: int, session: SessionDep = SessionDep):
 @router.post("/clients/create/", tags=["Clients"], status_code=201)
 async def create_client(client: client_validation.ClientCreateValidation, session: SessionDep = SessionDep):
 
+    existing_client = session.exec(
+        select(Client).where(
+            (Client.name == client.name) &
+            (Client.phone == client.phone) &
+            (Client.address == client.address)
+        )
+    ).first()
+
+    if existing_client:
+        raise HTTPException(
+            status_code=400,
+            detail="A client with the same name, phone and address already exists."
+        )
+
     db_client = Client(
         name=client.name,
         address=client.address,
@@ -43,7 +57,7 @@ async def create_client(client: client_validation.ClientCreateValidation, sessio
 
 
 @router.delete("/clients/delete/{client_id}", tags=["Clients"])
-async def delet_client(client_id: int, session: SessionDep = SessionDep):
+async def delete_client(client_id: int, session: SessionDep = SessionDep):
 
     client = session.get(Client, client_id)
     if not client:
