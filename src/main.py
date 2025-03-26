@@ -1,14 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database.engine import lifespan
-from .database.models.base import Base
-from .routes.client import client_routes
-from .routes.professional import professional_routes
-from .routes.service import service_routes
-from .routes.appointment import appointment_routes
+from database.engine import lifespan
+from routes.client import client_routes
+from routes.professional import professional_routes
+from routes.service import service_routes
+from routes.appointment import appointment_routes
 # from .routes import auth_routes, user_routes, product_routes
 # from .middlewares.logging_middleware import LoggingMiddleware
-from .config import settings
+from config import settings
 
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
