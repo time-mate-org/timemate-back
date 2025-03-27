@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
-from ...database.models.professional import Professional
-from ...database.engine import SessionDep
-from ...validations import professional_validation
+from database.models.professional import Professional
+from database.engine import SessionDep
+from validations import professional_validation
 
 
 router = APIRouter()
