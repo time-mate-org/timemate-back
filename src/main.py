@@ -5,6 +5,7 @@ from routes.client import client_routes
 from routes.professional import professional_routes
 from routes.service import service_routes
 from routes.appointment import appointment_routes
+from routes.healthcheck import healthcheck_route
 # from .routes import auth_routes, user_routes, product_routes
 # from .middlewares.logging_middleware import LoggingMiddleware
 from config import settings
@@ -22,6 +23,7 @@ app.add_middleware(
 # app.add_middleware(LoggingMiddleware)  # Middleware personalizado
 
 # Rotas
+app.include_router(healthcheck_route.router, tags=["Health"])
 app.include_router(client_routes.router, tags=["Clients"])
 app.include_router(professional_routes.router, tags=["Professionals"])
 app.include_router(service_routes.router, tags=["Services"])
