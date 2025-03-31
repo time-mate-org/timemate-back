@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from sqlmodel import Field, Relationship
 from .base import Base
 
@@ -15,5 +15,14 @@ class Professional(Base, table=True):
     phone: str = Field(nullable=False)
     title: str = Field(default=DEFAULT_TITLE, nullable=False)
 
-    appointments: list['Appointment'] = Relationship(
-        back_populates='professional')
+    appointments: List['Appointment'] = Relationship(back_populates='professional')
+
+
+class ProfessionalPublic(Base):
+    id: int
+    name: str
+    phone: str
+    title: str
+
+    class Config:
+        from_attributes = True
