@@ -1,18 +1,20 @@
 from datetime import timedelta, datetime
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
-from database.models.appointment import Appointment
+from database.models.appointment import Appointment, AppointmentPublic
 from database.models.client import Client
 from database.models.service import Service
 from database.models.professional import Professional
 from database.engine import SessionDep
 from validations import appointment_validation
+from sqlalchemy.orm import selectinload
+
 
 
 router = APIRouter()
 
 
-@router.get("/appointments/", tags=["Appointments"])
+@router.get("/appointments/", tags=["Appointments"], response_model=list[AppointmentPublic])
 async def read_appointments(session: SessionDep = SessionDep):
 
     statement = select(Appointment)
@@ -21,10 +23,15 @@ async def read_appointments(session: SessionDep = SessionDep):
     return appointments
 
 
-@router.get("/appointments/{appointment_id}", tags=["Appointments"])
+@router.get("/appointments/{appointment_id}", tags=["Appointments"], response_model=AppointmentPublic)
 async def read_appointment(appointment_id: int, session: SessionDep = SessionDep):
 
-    appointment = session.get(Appointment, appointment_id)
+    statement = (select(Appointment)
+                 .options(selectinload(Appointment.client),
+                          selectinload(Appointment.professional),
+                          selectinload(Appointment.service))).where(Appointment.id == appointment_id)
+
+    appointment = session.exec(statement).first()
     if not appointment:
         raise HTTPException(status_code=404, detail='Appointment not found.')
 

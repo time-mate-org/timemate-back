@@ -4,6 +4,10 @@ from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship
 from .base import Base
+from .client import ClientPublic
+from .professional import ProfessionalPublic
+from .service import ServicePublic
+
 
 if TYPE_CHECKING:
     from .client import Client
@@ -26,3 +30,15 @@ class Appointment(Base, table=True):
     client: "Client" = Relationship(back_populates="appointments")
     professional: "Professional" = Relationship(back_populates='appointments')
     service: "Service" = Relationship(back_populates='appointments')
+
+
+class AppointmentPublic(Base):
+    id: int
+    start_time: datetime
+    end_time: datetime
+    client: ClientPublic
+    professional: ProfessionalPublic
+    service: ServicePublic
+
+    class Config:
+        from_attributes = True

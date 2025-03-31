@@ -1,5 +1,5 @@
 from sqlmodel import Field, Relationship
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from .base import Base
 
 if TYPE_CHECKING:
@@ -13,5 +13,13 @@ class Service(Base, table=True):
     estimated_time: int = Field(nullable=False)
     price: float = Field(nullable=False)
 
-    appointments: list["Appointment"] = Relationship(
-        back_populates='service')
+    appointments: List["Appointment"] = Relationship(back_populates='service')
+
+class ServicePublic(Base):
+    id: int
+    name: str
+    estimated_time: int
+    price: float
+
+    class Config:
+        from_attributes = True
