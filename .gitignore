@@ -33,3 +33,6 @@ archive.zip
 #ca cert db
 *.pem
 
+#firebase key
+firebase_key.json
+
