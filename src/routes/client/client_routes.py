@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 from database.models.client import Client
 from database.engine import SessionDep
@@ -10,7 +10,6 @@ router = APIRouter()
 
 @router.get("/clients/", tags=["Clients"])
 async def read_clients(session: SessionDep = SessionDep):
-
     statement = select(Client)
     clients = session.exec(statement).all()
 
@@ -19,7 +18,6 @@ async def read_clients(session: SessionDep = SessionDep):
 
 @router.get("/clients/{client_id}", tags=["Clients"])
 async def read_client(client_id: int, session: SessionDep = SessionDep):
-
     client = session.get(Client, client_id)
     if not client:
         raise HTTPException(status_code=404, detail='Client not found.')
@@ -29,7 +27,6 @@ async def read_client(client_id: int, session: SessionDep = SessionDep):
 
 @router.post("/clients/create/", tags=["Clients"], status_code=201)
 async def create_client(client: client_validation.ClientCreateValidation, session: SessionDep = SessionDep):
-
     existing_client = session.exec(
         select(Client).where(
             (Client.name == client.name) &
@@ -59,7 +56,6 @@ async def create_client(client: client_validation.ClientCreateValidation, sessio
 
 @router.delete("/clients/delete/{client_id}", tags=["Clients"])
 async def delete_client(client_id: int, session: SessionDep = SessionDep):
-
     client = session.get(Client, client_id)
     if not client:
         raise HTTPException(status_code=404, detail='Client not found.')
@@ -72,7 +68,6 @@ async def delete_client(client_id: int, session: SessionDep = SessionDep):
 @router.put("/clients/update/{client_id}", tags=["Clients"])
 async def update_client(client_id: int, client: client_validation.ClientUpdateValidation,
                         session: SessionDep = SessionDep):
-
     db_client = session.get(Client, client_id)
     if not db_client:
         raise HTTPException(status_code=404, detail='Client not found.')

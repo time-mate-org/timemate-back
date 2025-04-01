@@ -41,4 +41,4 @@ def fixture_client(db_session: Session):
         yield db_session
 
     app.dependency_overrides[get_session] = override_get_db
-    return TestClient(app)
+    return TestClient(app, headers={"Authorization": "Bearer fake"})
