@@ -19,9 +19,12 @@ class Appointment(Base, table=True):
     __tablename__: str = "appointments"
 
     id: int | None = Field(default=None, primary_key=True)
-    client_id: int = Field(foreign_key="clients.id")
-    service_id: int = Field(foreign_key="services.id")
-    professional_id: int = Field(foreign_key="professionals.id")
+    client_id: int | None = Field(
+        default=None, foreign_key="clients.id", ondelete="SET NULL")
+    service_id: int | None = Field(
+        default=None, foreign_key="services.id", ondelete="SET NULL")
+    professional_id: int | None = Field(
+        default=None, foreign_key="professionals.id", ondelete="SET NULL")
     start_time: datetime = Field(nullable=False,
                                  sa_type=DATETIME(timezone=True, fsp=6))
     end_time: datetime = Field(nullable=False,
@@ -36,9 +39,9 @@ class AppointmentPublic(Base):
     id: int
     start_time: datetime
     end_time: datetime
-    client: ClientPublic
-    professional: ProfessionalPublic
-    service: ServicePublic
+    client: ClientPublic | None
+    professional: ProfessionalPublic | None
+    service: ServicePublic | None
 
     class Config:
         from_attributes = True
