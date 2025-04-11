@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database.engine import lifespan
 from routes.client import client_routes
 from routes.professional import professional_routes
+from routes.send_email import send_email_route
 from routes.service import service_routes
 from routes.appointment import appointment_routes
 from routes.healthcheck import healthcheck_route
@@ -37,6 +38,8 @@ app.include_router(appointment_routes.router, tags=[
                    "Appointments"], dependencies=[Depends(security_scheme)])
 
 app.include_router(healthcheck_route.router, tags=["Health"])
+app.include_router(send_email_route.router, tags=[
+                   "Mail"], dependencies=[Depends(security_scheme)])
 
 if __name__ == "__main__":
     import uvicorn
