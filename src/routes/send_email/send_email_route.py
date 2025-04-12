@@ -16,11 +16,12 @@ async def send(payload: send_email_validation.SendMailValidation):
     try:
         html_template = get_html_template(content=payload.content,
                                           title=payload.subject,
-                                          subtitle=payload.subtitle,
-                                          email_type=payload.category)
+                                          email_type=payload.category,
+                                          subtitle=payload.subtitle)
         payload = {
             "to": [{"email": payload.to.email, "name": payload.to.name}],
             "from": {"email": payload.origin.email, "name": payload.origin.name},
+            "subtitle": f"{payload.subtitle}", 
             "subject": payload.subject,
             "text": payload.content,
             "category": payload.category,
@@ -33,7 +34,8 @@ async def send(payload: send_email_validation.SendMailValidation):
             'Api-Token': os.getenv("MAIL_API")
         }
 
-        conn.request("POST", "/api/send", json.dumps(jsonable_encoder(payload)), headers)
+        conn.request("POST", "/api/send",
+                     json.dumps(jsonable_encoder(payload)), headers)
 
         res = conn.getresponse()
         data = res.read()
