@@ -1,4 +1,4 @@
-def get_html_template(title, subtitle, content, email_type): return f"""\
+def get_html_template(title, content, email_type, subtitle): return f"""\
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,14 +10,14 @@ def get_html_template(title, subtitle, content, email_type): return f"""\
   <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; margin-top: 20px;">
     <tr>
       <td align="center" style="background-color: #007bff; padding: 20px; color: #ffffff;">
-        <h1 style="margin: 0; font-size: 24px;">{title}</h1>
+        <h1 style="margin: 0; font-size: 20px;">{title}</h1>
       </td>
     </tr>
     <tr>
-      <td style="padding: 20px; text-align: center;">
-        <h4 style="font-size: 16px; margin: 0; padding: 2rem 0;">{subtitle}</h4>
+      <td style="padding: 20px;">
+        <h4 style="font-size: 16px; margin: 0; padding: 2rem 0; text-align: center;">{subtitle if subtitle else ""}</h4>
         <small style="font-size: 10px; margin: 10px 0;">Categoria: {email_type}</small>
-        <p style="font-size: 16px; color: #222; margin: 20px 0; padding: 3rem 0;">{content}</p>
+        <p style="font-size: 16px; margin: 20px 0; padding: 3rem 0;">{content}</p>
       </td>
     </tr>
     <tr>

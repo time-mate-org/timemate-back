@@ -8,6 +8,6 @@ class SendMailValidation(BaseModel):
     category: str
     content: str
     subject: str
-    subtitle: str | None
+    subtitle: str
     to: Contact
     origin: Contact
