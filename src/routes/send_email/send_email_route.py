@@ -16,12 +16,10 @@ async def send(payload: send_email_validation.SendMailValidation):
     try:
         html_template = get_html_template(content=payload.content,
                                           title=payload.subject,
-                                          email_type=payload.category,
-                                          subtitle=payload.subtitle)
+                                          email_type=payload.category)
         payload = {
             "to": [{"email": payload.to.email, "name": payload.to.name}],
             "from": {"email": payload.origin.email, "name": payload.origin.name},
-            "subtitle": f"{payload.subtitle}", 
             "subject": payload.subject,
             "text": payload.content,
             "category": payload.category,
