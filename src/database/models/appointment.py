@@ -29,7 +29,8 @@ class Appointment(Base, table=True):
                                  sa_type=DATETIME(timezone=True, fsp=6))
     end_time: datetime = Field(nullable=False,
                                sa_type=DATETIME(timezone=True, fsp=6))
-
+    status: str = Field(default="pending", max_length=20, nullable=False)
+        
     client: "Client" = Relationship(back_populates="appointments")
     professional: "Professional" = Relationship(back_populates='appointments')
     service: "Service" = Relationship(back_populates='appointments')
@@ -42,6 +43,7 @@ class AppointmentPublic(Base):
     client: ClientPublic | None
     professional: ProfessionalPublic | None
     service: ServicePublic | None
+    status: str
 
     class Config:
         from_attributes = True
