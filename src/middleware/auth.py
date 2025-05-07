@@ -5,7 +5,9 @@ from auth.firebase import get_current_user
 non_authentication_routes = [
     '/docs',
     '/redoc',
-    '/openapi.json'
+    '/openapi.json',
+    '/health',
+    '/send-mail/'
 ]
 
 
