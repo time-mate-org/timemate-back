@@ -38,8 +38,7 @@ app.include_router(appointment_routes.router, tags=[
                    "Appointments"], dependencies=[Depends(security_scheme)])
 
 app.include_router(healthcheck_route.router, tags=["Health"])
-app.include_router(send_email_route.router, tags=[
-                   "Mail"], dependencies=[Depends(security_scheme)])
+app.include_router(send_email_route.router, tags=["Mail"])
 
 if __name__ == "__main__":
     import uvicorn
