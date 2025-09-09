@@ -9,6 +9,7 @@ from routes.send_email import send_email_route
 from routes.service import service_routes
 from routes.appointment import appointment_routes
 from routes.healthcheck import healthcheck_route
+from routes.report import report_route
 from config import settings
 from middleware.auth import authMiddleware
 
@@ -36,6 +37,8 @@ app.include_router(service_routes.router, tags=[
                    "Services"], dependencies=[Depends(security_scheme)])
 app.include_router(appointment_routes.router, tags=[
                    "Appointments"], dependencies=[Depends(security_scheme)])
+app.include_router(report_route.router, tags=[
+                    "Report"], dependencies=[Depends(security_scheme)])
 
 app.include_router(healthcheck_route.router, tags=["Health"])
 app.include_router(send_email_route.router, tags=["Mail"])
