@@ -61,7 +61,7 @@ async def generate_report(request: report_validation.ReportRequest, session: Ses
 
     pdf_bytes = generate_report_pdf(report_data)
     
-    if start_date == end_date:
+    if request.start_date == request.end_date:
         filename = f"Relatorio_{cleaned_professional_name}_{start_date.strftime('%d-%m-%Y')}.pdf"
     else:
         filename = f"Relatorio_{cleaned_professional_name}_{start_date.strftime('%d-%m-%Y')}_a_{end_date.strftime('%d-%m-%Y')}.pdf"
