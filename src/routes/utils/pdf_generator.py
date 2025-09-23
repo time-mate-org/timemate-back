@@ -12,6 +12,39 @@ import os
 
 def generate_report_pdf(report_data) -> bytes:
 
+    def fl_to_real(value: float, symbol: bool = False) -> str:
+        """
+        Formata um float para o padrão de moeda brasileira.
+        
+        Args:
+            value (float): Valor a ser formatado
+            symbol (bool): Se True, adiciona o símbolo R$
+        
+        Returns:
+            str: Valor formatado no padrão brasileiro
+        """
+        # Formatar com duas casas decimais
+        formatted = f"{value:.2f}"
+        
+        # Separar parte inteira e decimal
+        integer_part, decimal_part = formatted.split('.')
+        
+        # Adicionar separador de milhares (ponto)
+        if len(integer_part) > 3:
+            # Inverter string para adicionar pontos a cada 3 dígitos
+            reversed_int = integer_part[::-1]
+            grouped = [reversed_int[i:i+3] for i in range(0, len(reversed_int), 3)]
+            integer_part = '.'.join(grouped)[::-1]
+        
+        # Juntar com vírgula como separador decimal
+        result = f"{integer_part},{decimal_part}"
+        
+        # Adicionar símbolo se necessário
+        if symbol:
+            result = f"R$ {result}"
+        
+        return result
+
     def calcula_espaco_contato(n_linhas):
         altura_pagina = 29.7 * cm
         margem_superior = 1 * cm
@@ -62,7 +95,7 @@ def generate_report_pdf(report_data) -> bytes:
 
 
     def inserir_linha_final():
-        dados_fim = [['TOTAL', '', '', '', f'R$ {total_valores:.2f}']]
+        dados_fim = [['TOTAL', '', '', '', fl_to_real(total_valores, symbol=True)]]
         tab_fim = Table(dados_fim, colWidths=[1*cm, 2.5*cm, 7*cm, 4*cm, 2.5*cm], rowHeights=[0.63*cm for i in range(len(dados_fim))]) # Soma precisa ser 17
         tab_fim.setStyle(TableStyle([
         ('TEXTCOLOR', (0,0), (-1,0), colors.black),
@@ -109,7 +142,7 @@ def generate_report_pdf(report_data) -> bytes:
 
 
     colaborador = report_data.get('name')
-    periodo = report_data.get('periodo')
+    periodo = report_data.get('period')
     dados_servicos = report_data.get('appointments', [])
     
     total_servicos = len(dados_servicos)
@@ -117,7 +150,7 @@ def generate_report_pdf(report_data) -> bytes:
     if total_servicos > 0:
         total_valores = sum([linha[3] for linha in dados_servicos])
         dados_servicos = [
-            [i+1, servico[0], servico[1], servico[2], f'{servico[3]:.2f}']
+            [i+1, servico[0], servico[1], servico[2], fl_to_real(servico[3], symbol=False)]
             for i, servico in enumerate(dados_servicos)
         ]
 
