@@ -180,7 +180,7 @@ def generate_report_pdf(report_data) -> bytes:
     conteudo.append(Spacer(1, 12))
 
     # Informações do relatório
-    conteudo.append(Paragraph(f'<b>colaborador:</b> {colaborador}', ParagraphStyle(name='colaborador', fontSize=11, spaceAfter=1)))
+    conteudo.append(Paragraph(f'<b>Colaborador:</b> {colaborador}', ParagraphStyle(name='colaborador', fontSize=11, spaceAfter=1)))
     conteudo.append(Paragraph(f'<b>Período:</b> {periodo}', ParagraphStyle(name='periodo', fontSize=10, spaceAfter=15)))
    
     # Relatório em branco
