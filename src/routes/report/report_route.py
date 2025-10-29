@@ -53,7 +53,7 @@ async def generate_report(request: report_validation.ReportRequest, session: Ses
 
     report_data = {
                 'name': professional_name, 
-                'period': f'{request.start_date.strftime('%d/%m/%Y')} a {request.end_date.strftime('%d/%m/%Y')}',
+                'period': f"{request.start_date.strftime('%d/%m/%Y')} a {request.end_date.strftime('%d/%m/%Y')}",
                 'appointments': report
     }
 
