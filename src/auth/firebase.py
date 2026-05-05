@@ -8,17 +8,17 @@ initialize_app(cred)
 # Esquema para extrair o token do header 'Authorization'
 bearer_scheme = HTTPBearer(auto_error=False)
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)) -> dict:
+
+async def get_current_user(credentials: str) -> dict:
     if not credentials:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No crendentials provided.",
+            detail="No credentials provided.",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
     try:
-        token = credentials.credentials
-        decoded_token = auth.verify_id_token(token)
+        decoded_token = auth.verify_id_token(credentials)
         return decoded_token
     except auth.InvalidIdTokenError:
         raise HTTPException(

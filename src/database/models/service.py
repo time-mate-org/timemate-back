@@ -13,9 +13,12 @@ class Service(Base, table=True):
     estimated_time: int = Field(nullable=False)
     price: float = Field(nullable=False)
 
-    appointments: List["Appointment"] = Relationship(back_populates='service')
-    
-    tenant_id: int | None = Field(default=None, foreign_key="tenants.id", ondelete="SET NULL")
+    appointments: List["Appointment"] = Relationship(back_populates="service")
+
+    tenant_id: int | None = Field(
+        default=None, foreign_key="tenants.id", ondelete="SET NULL"
+    )
+
 
 class ServicePublic(Base):
     id: int

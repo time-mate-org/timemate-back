@@ -8,7 +8,6 @@ from .client import ClientPublic
 from .professional import ProfessionalPublic
 from .service import ServicePublic
 
-
 if TYPE_CHECKING:
     from .client import Client
     from .professional import Professional
@@ -20,21 +19,25 @@ class Appointment(Base, table=True):
 
     id: int | None = Field(default=None, primary_key=True)
     client_id: int | None = Field(
-        default=None, foreign_key="clients.id", ondelete="SET NULL")
+        default=None, foreign_key="clients.id", ondelete="SET NULL"
+    )
     service_id: int | None = Field(
-        default=None, foreign_key="services.id", ondelete="SET NULL")
+        default=None, foreign_key="services.id", ondelete="SET NULL"
+    )
     professional_id: int | None = Field(
-        default=None, foreign_key="professionals.id", ondelete="SET NULL")
-    start_time: datetime = Field(nullable=False,
-                                 sa_type=DATETIME(timezone=True, fsp=6))
-    end_time: datetime = Field(nullable=False,
-                               sa_type=DATETIME(timezone=True, fsp=6))
+        default=None, foreign_key="professionals.id", ondelete="SET NULL"
+    )
+    start_time: datetime = Field(nullable=False, sa_type=DATETIME(timezone=True, fsp=6))
+    end_time: datetime = Field(nullable=False, sa_type=DATETIME(timezone=True, fsp=6))
 
     client: "Client" = Relationship(back_populates="appointments")
-    professional: "Professional" = Relationship(back_populates='appointments')
-    service: "Service" = Relationship(back_populates='appointments')
+    professional: "Professional" = Relationship(back_populates="appointments")
+    service: "Service" = Relationship(back_populates="appointments")
 
-    tenant_id: int | None = Field(default=None, foreign_key="tenants.id", ondelete="SET NULL")
+    tenant_id: int | None = Field(
+        default=None, foreign_key="tenants.id", ondelete="SET NULL"
+    )
+
 
 class AppointmentPublic(Base):
     id: int
@@ -44,7 +47,6 @@ class AppointmentPublic(Base):
     professional: ProfessionalPublic | None
     service: ServicePublic | None
     tenant_id: int | None
-
 
     class Config:
         from_attributes = True

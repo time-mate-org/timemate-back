@@ -137,3 +137,45 @@ Use **Git Bash** para comandos mais complexos:
 ## 📦 CI/CD
 
 Após a aprovação e merge do pull-request com alterações, uma ação do Github Actions fará o doployment automático da aplicação e disponibilizará [aqui](https://timemate-back.onrender.com).
+
+## Criando usuário com tenant_id no Firebase (processo manual)
+
+### Pré-requisitos
+- Acesso ao Firebase Console
+- Aplicação rodando localmente
+- Acesso ao bucket
+
+
+### Passo a passo
+
+**1. Crie um bucket com o nome do tenant, caso não exista**
+ - Tudo junto, só minúsculas
+ - Adicione uma foto para o logo, uma para o banner do blog e várias outras para a galeria
+
+
+**2. Criar o usuário no Firebase Console**
+
+Acesse **Firebase Console → Authentication → Users → Add User**.
+Informe email e senha. Anote o **UID** gerado.
+
+
+**3. Criar o Tenant no banco, caso não exista**
+
+Diretamento no banco, verifique se seu `tenant` já existe. Se não, crie em `tenants` com os dados necessários.
+Insira o caminho das imagens nos campos de blog_*, lembre-se que `blog_photos` é um campo json (ex: [`photo1.jpg', 'photo2.jpg'])
+Anote o `id` gerado — será o `tenant_id`.
+
+
+**4. Criar o usuário no banco**
+
+Insira na tabela `users` com o `uid` e `tenant_id` corretos:
+
+```sql
+INSERT INTO users (uid, email, tenant_id, ...) 
+VALUES ('UID_DO_FIREBASE', 'email@exemplo.com', 1, ...);
+```
+
+**5. Setar o custom claim**
+
+Custom claims são automaticamente setados quando um usuário é encontrado com a prop `uid` igual ao do usuário do firebase. 
+
