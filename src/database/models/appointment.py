@@ -34,6 +34,7 @@ class Appointment(Base, table=True):
     professional: "Professional" = Relationship(back_populates='appointments')
     service: "Service" = Relationship(back_populates='appointments')
 
+    tenant_id: int | None = Field(default=None, foreign_key="tenants.id", ondelete="SET NULL")
 
 class AppointmentPublic(Base):
     id: int
@@ -42,6 +43,8 @@ class AppointmentPublic(Base):
     client: ClientPublic | None
     professional: ProfessionalPublic | None
     service: ServicePublic | None
+    tenant_id: int | None
+
 
     class Config:
         from_attributes = True

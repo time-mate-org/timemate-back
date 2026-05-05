@@ -16,6 +16,8 @@ class Professional(Base, table=True):
     title: str = Field(default=DEFAULT_TITLE, nullable=False)
 
     appointments: List['Appointment'] = Relationship(back_populates='professional')
+    
+    tenant_id: int | None = Field(default=None, foreign_key="tenants.id", ondelete="SET NULL")
 
 
 class ProfessionalPublic(Base):
@@ -23,6 +25,7 @@ class ProfessionalPublic(Base):
     name: str
     phone: str
     title: str
+    tenant_id: int | None
 
     class Config:
         from_attributes = True
