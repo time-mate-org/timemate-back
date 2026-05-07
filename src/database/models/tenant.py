@@ -15,6 +15,7 @@ class Tenant(Base, table=True):
     availability: str = Field(nullable=False)  # ex: "Mon-Fri 9am-5pm"
     is_active: bool = Field(default=True)
     logo: str | None = Field(default=None)  # tenant bucket logo path
+    banner: str = Field(nullable=False)  # tenant bucket banner path
 
     blog_photos: Optional[List[str]] = Field(
         default=None, sa_column=Column(JSON, nullable=True)
@@ -22,3 +23,23 @@ class Tenant(Base, table=True):
     blog_title: str = Field(nullable=False)
     blog_subtitle: str = Field(nullable=False)
     blog_about: str | None = Field(default=None, sa_type=Text())
+
+
+class TenantPublic(Base):
+    id: int
+    name: str
+    email: str
+    phone: str
+    whatsapp: Optional[str]
+    address: str
+    availability: str
+    is_active: bool
+    logo: Optional[str]
+    blog_photos: Optional[List[str]]
+    blog_title: str
+    blog_subtitle: str
+    blog_about: Optional[str]
+    banner: str
+
+    class Config:
+        from_attributes = True

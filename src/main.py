@@ -12,6 +12,7 @@ from routes.healthcheck import healthcheck_route
 from routes.report import report_route
 from config import settings
 from middleware.auth import authMiddleware
+from routes.tenant import tenant_routes
 
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
@@ -39,6 +40,8 @@ app.include_router(appointment_routes.router, tags=[
                    "Appointments"], dependencies=[Depends(security_scheme)])
 app.include_router(report_route.router, tags=[
                     "Report"], dependencies=[Depends(security_scheme)])
+app.include_router(tenant_routes.router, tags=[
+                    "Tenants"], dependencies=[Depends(security_scheme)])
 
 app.include_router(healthcheck_route.router, tags=["Health"])
 app.include_router(send_email_route.router, tags=["Mail"])
