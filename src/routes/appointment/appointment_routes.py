@@ -1,6 +1,5 @@
 from datetime import timedelta, datetime
-from fastapi import APIRouter, HTTPException
-from sqlmodel import select
+from fastapi import APIRouter, HTTPException, Request
 from database.models.appointment import Appointment, AppointmentPublic
 from database.models.client import Client
 from database.models.service import Service
@@ -8,6 +7,13 @@ from database.models.professional import Professional
 from database.engine import SessionDep
 from validations import appointment_validation
 from sqlalchemy.orm import selectinload
+from utils import (
+    get_appointment_by_id,
+    get_client_by_id,
+    get_professional_by_id,
+    get_service_by_id,
+    select_by_tenant_id,
+)
 
 router = APIRouter()
 
@@ -15,10 +21,17 @@ router = APIRouter()
 @router.get(
     "/appointments/", tags=["Appointments"], response_model=list[AppointmentPublic]
 )
-async def read_appointments(session: SessionDep = SessionDep):
-
-    statement = select(Appointment)
-    appointments = session.exec(statement).all()
+async def read_appointments(request: Request, session: SessionDep = SessionDep):
+    appointments = select_by_tenant_id(
+        session,
+        Appointment,
+        tenant_id=request.state.tenant_id,
+        load=[
+            selectinload(Appointment.client),
+            selectinload(Appointment.professional),
+            selectinload(Appointment.service),
+        ],
+    )
 
     return appointments
 
@@ -28,25 +41,27 @@ async def read_appointments(session: SessionDep = SessionDep):
     tags=["Appointments"],
     response_model=AppointmentPublic,
 )
-async def read_appointment(appointment_id: int, session: SessionDep = SessionDep):
+async def read_appointment(
+    request: Request, appointment_id: int, session: SessionDep = SessionDep
+):
 
-    statement = (
-        select(Appointment).options(
-            selectinload(Appointment.client),
-            selectinload(Appointment.professional),
-            selectinload(Appointment.service),
-        )
-    ).where(Appointment.id == appointment_id)
-
-    appointment = session.exec(statement).first()
+    appointment = get_appointment_by_id(
+        session, appointment_id, request.state.tenant_id
+    )
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found.")
 
     return appointment
 
 
-@router.post("/appointments/create/", tags=["Appointments"], status_code=201)
+@router.post(
+    "/appointments/create/",
+    tags=["Appointments"],
+    status_code=201,
+    response_model=AppointmentPublic,
+)
 async def create_appointment(
+    request: Request,
     appointment_payload: appointment_validation.AppointmentCreateValidation,
     session: SessionDep = SessionDep,
 ):
@@ -58,23 +73,21 @@ async def create_appointment(
                 status_code=400, detail="'start_time' must be a ISO formated date."
             )
 
-    client = session.exec(
-        select(Client).where(Client.id == appointment_payload.client_id)
-    ).first()
+    client = get_client_by_id(
+        session, appointment_payload.client_id, request.state.tenant_id
+    )
     if not client:
         raise HTTPException(status_code=404, detail="Client not found.")
 
-    professional = session.exec(
-        select(Professional).where(
-            Professional.id == appointment_payload.professional_id
-        )
-    ).first()
+    professional = get_professional_by_id(
+        session, appointment_payload.professional_id, request.state.tenant_id
+    )
     if not professional:
         raise HTTPException(status_code=404, detail="Professional not found.")
 
-    service = session.exec(
-        select(Service).where(Service.id == appointment_payload.service_id)
-    ).first()
+    service = get_service_by_id(
+        session, appointment_payload.service_id, request.state.tenant_id
+    )
     if not service:
         raise HTTPException(status_code=404, detail="Service not found.")
 
@@ -92,6 +105,7 @@ async def create_appointment(
         service_id=appointment_payload.service_id,
         start_time=appointment_start_time,
         end_time=appointment_end_time,
+        tenant_id=request.state.tenant_id,
     )
 
     session.add(db_appointment)
@@ -102,19 +116,29 @@ async def create_appointment(
 
 
 @router.delete("/appointments/delete/{appointment_id}", tags=["Appointments"])
-async def delete_appointment(appointment_id: int, session: SessionDep = SessionDep):
+async def delete_appointment(
+    request: Request, appointment_id: int, session: SessionDep = SessionDep
+):
 
-    appointment = session.get(Appointment, appointment_id)
+    appointment = get_appointment_by_id(
+        session, appointment_id, request.state.tenant_id
+    )
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found.")
+
     session.delete(appointment)
     session.commit()
 
     return {"message": f"Appointment {appointment_id} has been deleted."}
 
 
-@router.put("/appointments/update/{appointment_id}", tags=["Appointments"])
+@router.put(
+    "/appointments/update/{appointment_id}",
+    tags=["Appointments"],
+    response_model=AppointmentPublic,
+)
 async def update_appointment(
+    request: Request,
     appointment_id: int,
     appointment_payload: appointment_validation.AppointmentUpdateValidation,
     session: SessionDep = SessionDep,
@@ -128,33 +152,33 @@ async def update_appointment(
                 status_code=400, detail="'start_time' must be a ISO formated date."
             )
 
-    db_appointment = session.get(Appointment, appointment_id)
+    db_appointment = get_appointment_by_id(
+        session, appointment_id, request.state.tenant_id
+    )
     if not db_appointment:
         raise HTTPException(status_code=404, detail="Appointment not found.")
 
     new_client: Client | None = None
     if appointment_payload.client_id:
-        new_client = session.exec(
-            select(Client).where(Client.id == appointment_payload.client_id)
-        ).first()
+        new_client = get_client_by_id(
+            session, appointment_payload.client_id, request.state.tenant_id
+        )
     if appointment_payload.client_id and not new_client:
         raise HTTPException(status_code=404, detail="Client not found.")
 
     new_professional: Professional | None = None
     if appointment_payload.professional_id:
-        new_professional = session.exec(
-            select(Professional).where(
-                Professional.id == appointment_payload.professional_id
-            )
-        ).first()
+        new_professional = get_professional_by_id(
+            session, appointment_payload.professional_id, request.state.tenant_id
+        )
     if appointment_payload.professional_id and not new_professional:
         raise HTTPException(status_code=404, detail="Professional not found.")
 
     new_service: Service | None = None
     if appointment_payload.service_id:
-        new_service = session.exec(
-            select(Service).where(Service.id == appointment_payload.service_id)
-        ).first()
+        new_service = get_service_by_id(
+            session, appointment_payload.service_id, request.state.tenant_id
+        )
     if appointment_payload.service_id and not new_service:
         raise HTTPException(status_code=404, detail="Service not found.")
 
@@ -221,25 +245,24 @@ def check_concurrent_appointment_conflicts(
     new_appointment_end_time: datetime,
     appointment_id: int | None = None,
 ):
-    same_hour_appointments = session.exec(
-        select(Appointment).where(
-            (
-                (  # ver se quando o novo começa tem algum ocorrendo
-                    (new_appointment_start_time >= Appointment.start_time)
-                    & (new_appointment_start_time < Appointment.end_time)
+    same_hour_appointments = select_by_tenant_id(
+        session,
+        Appointment,
+        tenant_id=client.tenant_id,
+        filters=[
+            lambda a: (
+                (
+                    (new_appointment_start_time >= a.start_time)
+                    & (new_appointment_start_time < a.end_time)
                 )
-                | (  # ver se quando o novo termina tem algum ocorrendo
-                    (new_appointment_end_time > Appointment.start_time)
-                    & (new_appointment_end_time <= Appointment.end_time)
+                | (
+                    (new_appointment_end_time > a.start_time)
+                    & (new_appointment_end_time <= a.end_time)
                 )
             )
-            & (
-                # não pegar o mesmo que estou atualizando,
-                Appointment.id
-                != appointment_id
-            )
-        )
-    ).all()
+            & (a.id != appointment_id)
+        ],
+    )
 
     same_client_and_same_hour_appointments = list(
         filter(lambda appt: appt.client_id == client.id, same_hour_appointments)
