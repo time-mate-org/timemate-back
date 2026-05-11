@@ -7,6 +7,7 @@ class Tenant(Base, table=True):
     __tablename__ = "tenants"
 
     id: int | None = Field(default=None, primary_key=True)  # ex: "tenant_abc"
+    subdomain: str = Field(nullable=False, unique=True)  # ex: "tenant-abc"
     name: str = Field(nullable=False)
     email: str = Field(nullable=False, unique=True)
     phone: str = Field(nullable=False)
@@ -23,10 +24,13 @@ class Tenant(Base, table=True):
     blog_title: str = Field(nullable=False)
     blog_subtitle: str = Field(nullable=False)
     blog_about: str | None = Field(default=None, sa_type=Text())
+    instagram_profile: str | None = Field(default=None)
+    facebook_profile: str | None = Field(default=None)
 
 
 class TenantPublic(Base):
     id: int
+    subdomain: str
     name: str
     email: str
     phone: str
@@ -40,6 +44,8 @@ class TenantPublic(Base):
     blog_subtitle: str
     blog_about: Optional[str]
     banner: str
+    instagram_profile: Optional[str]
+    facebook_profile: Optional[str]
 
     class Config:
         from_attributes = True

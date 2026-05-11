@@ -60,6 +60,8 @@ async def create_service(
         name=service.name,
         estimated_time=service.estimated_time,
         price=service.price,
+        image=service.image,
+        description=service.description,
         tenant_id=request.state.tenant_id,
     )
 
@@ -108,3 +110,18 @@ async def update_service(
     session.refresh(db_service)
 
     return db_service
+
+
+@router.get(
+    "/services/tenant/{tenant_id}",
+    tags=["Services"],
+    response_model=list[ServicePublic],
+)
+async def get_service_by_tenant(
+    tenant_id: int,
+    session: SessionDep = SessionDep,
+):
+
+    services = select_by_tenant_id(session, Service, tenant_id=tenant_id)
+
+    return services

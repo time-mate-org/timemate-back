@@ -11,6 +11,8 @@ non_authentication_routes = [
     "/openapi.json",
     "/health",
     "/send-mail/",
+    "/tenants/subdomain/",
+    "/services/tenant/",
 ]
 
 
@@ -19,7 +21,10 @@ async def authMiddleware(request: Request, call_next):
         if request.method == "OPTIONS":
             return await call_next(request)
         else:
-            should_bypass_route = request.url.path in non_authentication_routes
+            should_bypass_route = should_bypass_route = any(
+                request.url.path.startswith(route)
+                for route in non_authentication_routes
+            )
 
             token = request.headers.get("Authorization")
             if not token and not should_bypass_route:
