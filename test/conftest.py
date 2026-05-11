@@ -1,3 +1,4 @@
+from unittest.mock import AsyncMock, patch
 from fastapi.testclient import TestClient
 import pytest
 from sqlmodel import SQLModel, Session, create_engine
@@ -7,10 +8,11 @@ from main import app
 # Configuração do banco de testes
 TEST_SQLITE_URL = "sqlite:///:memory:?cache=shared"
 connect_args = {"check_same_thread": False}
-test_engine = create_engine(
-    TEST_SQLITE_URL, echo=False, connect_args=connect_args)
+test_engine = create_engine(TEST_SQLITE_URL, echo=False, connect_args=connect_args)
 
 # Fixture para criar as tabelas e fornecer sessão
+
+fake_user = {"uid": "test-uid", "email": "test@test.com", "tenant_id": "1"}
 
 
 @pytest.fixture(autouse=True)
@@ -22,7 +24,7 @@ def create_tables():
         SQLModel.metadata.drop_all(conn)
 
 
-@pytest.fixture(name='db_session', autouse=True)
+@pytest.fixture(name="db_session", autouse=True)
 def db_session():
     connection = test_engine.connect()
     transaction = connection.begin()
@@ -33,6 +35,14 @@ def db_session():
     session.close()
     transaction.rollback()
     connection.close()
+
+
+@pytest.fixture(autouse=True)
+def mock_firebase_auth():
+    with patch(
+        "middleware.auth.get_current_user", new=AsyncMock(return_value=fake_user)
+    ):
+        yield
 
 
 @pytest.fixture(name="client")

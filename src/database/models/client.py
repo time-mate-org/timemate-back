@@ -13,7 +13,11 @@ class Client(Base, table=True):
     address: str = Field(nullable=False)
     phone: str = Field(nullable=False)
 
-    appointments: List['Appointment'] = Relationship(back_populates='client')
+    appointments: List["Appointment"] = Relationship(back_populates="client")
+
+    tenant_id: int | None = Field(
+        default=None, foreign_key="tenants.id", ondelete="SET NULL"
+    )
 
 
 class ClientPublic(Base):
@@ -21,6 +25,7 @@ class ClientPublic(Base):
     name: str
     address: str
     phone: str
+    tenant_id: int | None
 
     class Config:
         from_attributes = True
