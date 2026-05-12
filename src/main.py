@@ -20,7 +20,7 @@ app = FastAPI(title=settings.app_name, lifespan=lifespan)
 # Middlewares
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"http://(.*\.)?localhost(:\d+)?|https://(.*\.)?timemate-front\.onrender\.com",
+    allow_origin_regex=r"http://(.*\.)?localhost(:\d+)?|https://(.*\.)?timemate\.ennes\.dev",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
